@@ -7,12 +7,12 @@ local allPlayers	= {}	-- List of allPlayers alive or not
 local killTable 	= {}	-- List of players to be killed
 local lastGameInfo 	= {}	-- Info about the last game
 
-local suspectsNeed 	= 3		-- This will be changed on the script run
+local suspectsNeed 	= 3		-- This will be changed in the script
 local PPT 		= 6		-- Players per traitor
 local keys = {9, 32, 72, 79}		-- Keys
-local gameCurrently	= false 	-- If a game is running then its changed to true
-local someoneWon	= false		-- No one won so it is false
-local rangeToCatch 	= 60		-- Range between two players that can means death
+local gameCurrently	= false 	-- If a game is running then it changes to true
+local someoneWon	= false		-- No one won at the start so it is false
+local rangeToCatch 	= 60		-- Range between two players that may mean death
 
 local lang = {
 	br = {
