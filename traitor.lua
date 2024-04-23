@@ -1,14 +1,14 @@
 -- Last Update: 2020
 
 local playersDictionary = {}	-- Info about the player
-local playersList 	= {}		-- List of alive players
-local traitorList 	= {}		-- List of alive traitors
-local allPlayers	= {}		-- List of allPlayers alive or not
-local killTable 	= {}		-- List of players to be killed
-local lastGameInfo 	= {}		-- Info about the last game
+local playersList 	= {}	-- List of alive players
+local traitorList 	= {}	-- List of alive traitors
+local allPlayers	= {}	-- List of allPlayers alive or not
+local killTable 	= {}	-- List of players to be killed
+local lastGameInfo 	= {}	-- Info about the last game
 
-local suspectsNeed 	= 3			-- This will be changed on the script run
-local PPT 			= 6			-- Players per traitor
+local suspectsNeed 	= 3		-- This will be changed on the script run
+local PPT 		= 6		-- Players per traitor
 local keys = {9, 32, 72, 79}		-- Keys
 local gameCurrently	= false 	-- If a game is running then its changed to true
 local someoneWon	= false		-- No one won so it is false
@@ -17,20 +17,20 @@ local rangeToCatch 	= 60		-- Range between two players that can means death
 local lang = {
 	br = {
 		beingSuspected  = "<V>%s</V> está sendo suspeito de ser um <R>traidor</R> (%d/%d)",
-		biteAgain 		= "<J>Você pode morder novamente :)</J>",
-		bitePlayer 		= "Você mordeu <PT>%s</PT>, ele morrerá em 3 segundos. Você poderá morder novamente em 10s.",
+		biteAgain 	= "<J>Você pode morder novamente :)</J>",
+		bitePlayer 	= "Você mordeu <PT>%s</PT>, ele morrerá em 3 segundos. Você poderá morder novamente em 10s.",
 		cooldownInfo 	= "Acalme-se!",
-		helpMessage		= "<J>#traitor é um jogo criado por Impuredeath. Atalhos: \nTAB ↹: Cancelar uma suspeita.\nO: Disponibiliza os stats da última partida\nH: Disponibiliza as informações sobre o jogo.</J>",
-		ifNotBite 		= "Se você não morder ninguém em %d segundos você morrerá!",
+		helpMessage	= "<J>#traitor é um jogo criado por Impuredeath. Atalhos: \nTAB ↹: Cancelar uma suspeita.\nO: Disponibiliza os stats da última partida\nH: Disponibiliza as informações sobre o jogo.</J>",
+		ifNotBite 	= "Se você não morder ninguém em %d segundos você morrerá!",
 		infoLastGame 	= "<font face='Lucida Console' size='12'><J>NomeDoJogador#1234 "..string.rep(' ', 7).. "- SE - SC - PM - TM</J></font>",
 		infoLastTitle	= "<font face='Lucida Console' size='12'><J>Informações da última partida</J></font>",
 		killedPlayer 	= "Ah não! <V>%s</V> matou o inocente <PT>%s</PT> :(",
 		killedTraitor 	= "<V>%s</V> matou o traidor <R>%s</R>",
-		notFound 		= "%s não foi encontrado.",
+		notFound 	= "%s não foi encontrado.",
 		notFoundMouse	= "Não foi possível detectar um jogador.",
-		playerDied 		= "<PT>%s</PT> foi morto!",
-		playerInfo 		= "Você é <PT>inocente</PT>. Procure pelos <R>traidores</R>",
-		playerWin 		= "<PT>Os inocentes VENCERAM!</PT>",
+		playerDied 	= "<PT>%s</PT> foi morto!",
+		playerInfo 	= "Você é <PT>inocente</PT>. Procure pelos <R>traidores</R>",
+		playerWin 	= "<PT>Os inocentes VENCERAM!</PT>",
 		suspectedOne 	= "Você já suspeitou de alguém",
 		suspectedLots 	= "Você fez muitas suspeitas erradas",
 		suspiciousForIt = "Você ganhou uma acusação por participar da morte do <PT>inocente %s</PT>",
@@ -41,27 +41,27 @@ local lang = {
 	},
 	en = {
 		beingSuspected  = "<V>%s</V> is being suspected of being a <R>traitor</R> (%d/%d)",
-		biteAgain 		= "<J>You can bite again :)</J>",
-		bitePlayer 		= "You bit <PT>%s</PT>, %s will die in 3 seconds. You can bite in 10s again.",
+		biteAgain 	= "<J>You can bite again :)</J>",
+		bitePlayer 	= "You bit <PT>%s</PT>, %s will die in 3 seconds. You can bite in 10s again.",
 		cooldownInfo 	= "Calm down!",
-		helpMessage		= "<J>#traitor is a game by Impuredeath. Hotkey: \nTAB ↹: Cancel a suspect.\nO: Show the last match information\nH: Show the game information</J>",
-		ifNotBite 		= "You have %d to kill someone before you die!",
+		helpMessage	= "<J>#traitor is a game by Impuredeath. Hotkey: \nTAB ↹: Cancel a suspect.\nO: Show the last match information\nH: Show the game information</J>",
+		ifNotBite 	= "You have %d to kill someone before you die!",
 		infoLastGame 	= "<font face='Lucida Console' size='12'><J>PlayerName#1234 "..string.rep(' ', 10).. "- WS - CS - PK - TK</J></font>",
 		infoLastTitle	= "<font face='Lucida Console' size='12'><J>Last game information</J></font>",
 		killedPlayer 	= "Oh noes! <V>%s</V> killed the innocent <PT>%s</PT> :(",
 		killedTraitor 	= "<V>%s</V> killed the traitor <R>%s</R>",
-		notFound 		= "%s not found in the room.",
+		notFound 	= "%s not found in the room.",
 		notFoundMouse	= "Could not find a player.",
-		playerDied 		= "<PT>%s</PT> has been killed!",
-		playerInfo 		= "You are <PT>innocent</PT>. Find out the <R>traitors</R>",
-		playerWin 		= "<PT>The innocents WON!</PT>",
+		playerDied 	= "<PT>%s</PT> has been killed!",
+		playerInfo 	= "You are <PT>innocent</PT>. Find out the <R>traitors</R>",
+		playerWin 	= "<PT>The innocents WON!</PT>",
 		suspectedOne 	= "You already suspected someone",
 		suspectedLots 	= "You did lots of wrong suspects",
 		suspiciousForIt = "You brought suspicion for yourself by taking part of killing the <PT>innocent %s</PT>",
 		traitorDied 	= "The traitor <R>%s</R> died!",
 		traitorInfo 	= "You are a <R>traitor</R>. Kill players with spacebar. You can chat with other traitors using \"!tc yourtext\"",
-		traitorWin 		= "The <R>traitors</R> (<R>%s</R>) won the game!",
-		welcome 		= "<J>Welcome to #traitor, use the hotkey H for more information.</J>"
+		traitorWin 	= "The <R>traitors</R> (<R>%s</R>) won the game!",
+		welcome 	= "<J>Welcome to #traitor, use the hotkey H for more information.</J>"
 	},
 }
 
@@ -84,7 +84,6 @@ end
 local maps = {'@3998291','@3766247','@3776043','@282322','@3803927','@3783232','@297547','@2872064','@740834','@3829257','@4017512','@310723','@2890428','@3790965','@2872064','@312253', '@3769399', '@3057710', '@3829257','@3825129','@3797815','@3977032', '@3803927', '@740834', '@816611','@3818481', '@3816936', '@3817515', '@3804014', '@3773092', '@3804484', '@3816869', '@3827096', '@3829794', '@3842098', '@3815556', '@3846078', '@3793772', '@3858736','@1707434', '@3890688', '@764203', '@3914126', '@4017512', '@4058198', '@3941983'}
 
 local players = {
-
 	new = function(name)
 		return {
 			name 		= name,
@@ -96,7 +95,7 @@ local players = {
 			suspected	= false,
 
 			needKillNumber 	= 0,
-			suspectBy 		= 0,
+			suspectBy 	= 0,
 			wrongSuspects 	= 0,
 			correctSuspects = 0,
 			playersKilled 	= 0,
@@ -127,11 +126,11 @@ local players = {
 	end,
 
 	biteSomeone = function(self)
-		self.needKillNumber = 0
-		self.needBite = os.time()+10000
-		self.lastBite = os.time()
-		self.warned	  = false
-		self.playersKilled = self.playersKilled + 1
+		self.needKillNumber 	= 0
+		self.needBite 		= os.time()+10000
+		self.lastBite 		= os.time()
+		self.warned	  	= false
+		self.playersKilled 	= self.playersKilled + 1
 	end,
 
 	suspectedBySomeone = function(self, suspectorName)
